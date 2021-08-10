@@ -8,22 +8,29 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.compose.R
 import com.example.compose.ui.theme.ComposeTheme
 
 data class Sender(
     val name: String,
+    val isAdmin: Boolean = false,
     val profile: Int
 )
 
@@ -73,6 +80,118 @@ fun Conversation() {
     }
 }
 
+@Preview(name = "normal user")
+@Composable
+fun PreviewMessageBoxForUser() {
+    SvMessageBox(
+        Message(
+            sender = Sender(
+                name = "alan",
+                profile = R.drawable.ic_launcher_background
+            ),
+            content = "1 daryl 2 daryl 3 daryl, 1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl"
+        )
+    )
+}
+
+@Preview(name = "admin user")
+@Composable
+fun PreviewMessageBoxForAdmin() {
+    SvMessageBox(
+        Message(
+            sender = Sender(
+                name = "alan",
+                isAdmin = true,
+                profile = R.drawable.ic_launcher_background
+            ),
+            content = "1 daryl 2 daryl 3 daryl, 1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl"
+        )
+    )
+}
+
+@Preview(name = "pin system Message")
+@Composable
+fun PreviewSystemMessage() {
+    SystemMessage("管理員已經置頂消息")
+}
+
+@Preview
+@Composable
+fun ChatGroupScreen() {
+    val message = Message(
+        sender = Sender(
+            name = "alan",
+            profile = R.drawable.ic_launcher_background
+        ),
+        content = "1 daryl 2 daryl 3 daryl, 1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl1 daryl 2 daryl 3 daryl"
+    )
+    Column {
+        SvMessageBox(message)
+        SystemMessage(message = "管理員已經置頂消息")
+    }
+}
+
+@Composable
+fun SystemMessage(message: String) {
+    Surface(
+        color = Color(android.graphics.Color.parseColor("#e5e5e5")),
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Text(
+            message,
+            modifier = Modifier
+                .padding(horizontal = 18.5.dp)
+                .padding(vertical = 3.dp),
+            color = Color(android.graphics.Color.parseColor("#666666"))
+        )
+    }
+}
+
+@Composable
+fun SvMessageBox(message: Message) {
+    Row(modifier = Modifier.padding(10.dp)) {
+        Column {
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = "Contact profile",
+                modifier = Modifier
+                    .size(45.dp)
+                    .clip(CircleShape)
+                    .border(1.5.dp, MaterialTheme.colors.primary, CircleShape)
+            )
+            OutlinedButton(
+                onClick = {},
+                modifier = Modifier
+                    .width(34.dp)
+                    .height(16.5.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .background(Color.Cyan)
+            ) {
+                Text("打賞", style = TextStyle(fontSize = 11.sp))
+            }
+        }
+        Spacer(Modifier.width(3.dp))
+        Column(
+            Modifier
+                .background(color = Color.White)
+                .border(Dp(10f), color = Color.Companion.White, shape = RoundedCornerShape(10))
+                .padding(10.dp)
+        ) {
+            Text(
+                message.sender.name, color = when (message.sender.isAdmin) {
+                    true -> Color.Red
+                    else -> Color.Black
+                }
+            )
+            Spacer(modifier = Modifier.height(3.dp))
+            Text(message.content, fontWeight = FontWeight.W300, color = Color.Black)
+            if (message.sender.isAdmin) {
+                Spacer(modifier = Modifier.height(3.dp))
+                Text("內容只作參考，不構成投資建議", color = Color(android.graphics.Color.parseColor("#666666")))
+            }
+        }
+    }
+}
 
 @Composable
 fun MessageCard(message: Message) {
